@@ -2,4 +2,6 @@
 
 2. HPA, Ingress, configmap, service. RBAC
 
-3. Helm, NetworkPolicy, Service Mesh
+3. Consisten Volume, secrets
+
+4. Helm, NetworkPolicy, Service Mesh
