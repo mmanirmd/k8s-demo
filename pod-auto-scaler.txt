@@ -4,3 +4,13 @@ kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/late
 kubectl get deployment metrics-server -n kube-system
 
 kubectl apply -f hpa-php-apache.yaml
+
+Now run the following command to increase the load on the pod
+
+kubectl run -i --tty load-generator --rm --image=busybox --restart=Never -- /bin/sh -c "while sleep 0.01; do wget -q -O- http://php-apache; done"
+
+Verify:
+kubectl get hpa
+kubectl get rs
+
+
