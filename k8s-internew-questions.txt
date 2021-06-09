@@ -1,0 +1,20 @@
+What are the different components of Kubernetes Architecture
+A. The master node has the kube-controller-manager, kube-apiserver, kube-scheduler, etcd. Whereas the worker node has kubelet and kube-proxy running on each node.
+
+What is statefulset
+
+Single container vs multi container pod: init container, 
+
+What is static POD?
+Static Pods are managed directly by the kubelet daemon on a specific node, without the API server observing them.
+Unlike Pods that are managed by the control plane (for example, a Deployment); instead, the kubelet watches each static Pod (and restarts it if it fails).
+Static Pods are always bound to one Kubelet on a specific node.
+
+What is deamonset?
+A DaemonSet ensures that all (or some) Nodes run a copy of a Pod. As nodes are added to the cluster, Pods are added to them. As nodes are removed from the cluster, those Pods are garbage collected.
+Some typical uses of a DaemonSet are:
+
+running a cluster storage daemon on every node
+running a logs collection daemon on every node
+running a node monitoring daemon on every node
+
