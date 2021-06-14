@@ -1,6 +1,6 @@
 1. Docker, Deployment, Pods, replicaSet, Cluster AutoScaler, Deamonset
 
-2. HPA, Ingress, configmap, service. RBAC
+2. HPA, Ingress, configmap, service. RBAC, logging/monitoring
 
 3. Consisten Volume, secrets
 
