@@ -1,0 +1,20 @@
+Deploy prometheus in EKS cluster using helm. (https://docs.aws.amazon.com/eks/latest/userguide/prometheus.html)
+
+Create a Prometheus namespace:
+kubectl create namespace prometheus
+
+Add the prometheus-community chart repository:
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+
+Deploy Prometheus:
+helm upgrade -i prometheus prometheus-community/prometheus \
+    --namespace prometheus \
+    --set alertmanager.persistentVolume.storageClass="gp2",server.persistentVolume.storageClass="gp2"
+   
+Verify the prometheus PODS:
+kubectl get pods -n prometheus
+
+Use kubectl to port forward the Prometheus console to your local machin:
+kubectl --namespace=prometheus port-forward deploy/prometheus-server 9090
+
+Point a web browser to localhost:9090 to view the Prometheus console
