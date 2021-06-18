@@ -1,5 +1,8 @@
 Deploy prometheus in EKS cluster using helm. (https://docs.aws.amazon.com/eks/latest/userguide/prometheus.html)
 
+Install the metric server if it's not installed already:
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
 Create a Prometheus namespace:
 kubectl create namespace prometheus
 
