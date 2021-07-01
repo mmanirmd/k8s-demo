@@ -21,7 +21,7 @@ eksctl utils associate-iam-oidc-provider \
 # Create Public Node Group   
 eksctl create nodegroup --cluster=eks-demo \
                        --region=us-east-1 \
-                       --name=eksdemo1-ng-public1 \
+                       --name=ng-public1 \
                        --node-type=t3.small \
                        --nodes=2 \
                        --nodes-min=2 \
@@ -37,7 +37,7 @@ eksctl create nodegroup --cluster=eks-demo \
                        --alb-ingress-access 
 
 ```
-#### Commands to check eks Cluster
+#### Commands to check delete eks Cluster
 ```
 # List EKS clusters
 eksctl get cluster
@@ -50,4 +50,11 @@ kubectl get nodes -o wide
 
 # Our kubectl context should be automatically changed to new cluster
 kubectl config view --minify
+
+# Delete Node Group
+eksctl delete nodegroup --cluster=eks-demo --name=ng-public1
+
+# Delete Cluster
+eksctl delete cluster eks-demo
+
 ```
