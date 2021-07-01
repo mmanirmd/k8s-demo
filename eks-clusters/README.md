@@ -37,6 +37,26 @@ eksctl create nodegroup --cluster=eks-demo \
                        --alb-ingress-access 
 
 ```
+#### Create EKS Node Group in Private Subnets
+- Option to create node group in private subnets --node-private-networking
+```
+eksctl create nodegroup --cluster=eks-demo \
+                        --region=us-east-1 \
+                        --name=ng-private1 \
+                        --node-type=t3.small \
+                        --nodes-min=2 \
+                        --nodes-max=4 \
+                        --node-volume-size=20 \
+                        --ssh-access \
+                        --ssh-public-key=my-key \
+                        --managed \
+                        --asg-access \
+                        --external-dns-access \
+                        --full-ecr-access \
+                        --appmesh-access \
+                        --alb-ingress-access \
+                        --node-private-networking
+```
 #### Commands to check delete eks Cluster
 ```
 # List EKS clusters
