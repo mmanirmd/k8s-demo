@@ -1,4 +1,4 @@
-Create EKS Cluster using eksctl
+# Create EKS Cluster using eksctl
 
 # # Create Cluster
 eksctl create cluster --name=eks-demo \
