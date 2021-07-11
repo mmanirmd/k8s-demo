@@ -1,0 +1,69 @@
+kubectl run my-first-pod --image stacksimplify/kubenginx:1.0.0
+
+# List Pods
+kubectl get pods
+
+kubectl get pods -o wide
+
+# Describe the Pod
+kubectl describe pod my-first-pod
+
+# Delete Pod
+kubectl delete pod my-first-pod
+
+# Expose Pod as a Service
+kubectl expose pod my-first-pod  --type=NodePort --port=80 --name=my-first-service
+
+# Get Service Info
+kubectl get service
+kubectl get svc
+
+# Get Public IP of Worker Nodes
+kubectl get nodes -o wide
+
+Access the Application using Public IP
+http://<node1-public-ip>:<Node-Port>
+
+
+Verify Pod Logs
+# Dump Pod logs
+kubectl logs my-first-pod
+
+# Stream pod logs with -f option and access application to see logs
+kubectl logs -f my-first-pod
+
+
+Connect to Container in a POD
+# Connect to Nginx Container in a POD
+kubectl exec -it my-first-pod -- /bin/bash
+
+# Execute some commands in Nginx container
+ls
+cd /usr/share/nginx/html
+cat index.html
+exit
+
+# Sample Commands
+kubectl exec -it my-first-pod env
+kubectl exec -it my-first-pod ls
+kubectl exec -it my-first-pod cat /usr/share/nginx/html/index.html
+
+# Get pod definition YAML output
+kubectl get pod my-first-pod -o yaml   
+
+# Get service definition YAML output
+kubectl get service my-first-service -o yaml   
+
+Clean Up:
+
+# Get all Objects in default namespace
+kubectl get all
+
+# Delete Services
+kubectl delete svc my-first-service
+
+# Delete Pod
+kubectl delete pod my-first-pod
+
+# Get all Objects in default namespace
+kubectl get all
