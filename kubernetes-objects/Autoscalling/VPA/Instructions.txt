@@ -1,0 +1,83 @@
+# Clone Repo
+git clone https://github.com/kubernetes/autoscaler.git
+
+# Navigate to VPA
+cd autoscaler/vertical-pod-autoscaler/
+
+# Uninstall VPA (if we are using old one)
+./hack/vpa-down.sh
+
+# Install new version of VPA
+./hack/vpa-up.sh
+
+# Verify VPA Pods
+kubectl get pods -n kube-system
+
+
+# Deploy Application
+kubectl apply -f kube-manifests/01-VPA-DemoApplication.yml
+
+# List Pods, Deploy & Service
+kubectl get pod,svc,deploy
+
+# Describe Pod
+kubectl describe pod <pod-name>
+
+# Access Application (If our NodeGroup is in Public Subnet, if not ignore)
+kubectl get nodes -o wide
+http://<Worker-Node-Public-IP>:31232
+
+
+
+# Deploy Application
+kubectl apply -f VPA-Demo.yml
+
+# List Pods, Deploy & Service
+kubectl get pod,svc,deploy
+
+# Describe Pod
+kubectl describe pod <pod-name>
+
+# Access Application (If our NodeGroup is in Public Subnet, if not ignore)
+kubectl get nodes -o wide
+http://<Worker-Node-Public-IP>:31232
+
+
+Deploy VPA Object
+
+# Deploy
+kubectl apply -f VPA-Manifest.yml
+
+# List VPA
+kubectl get vpa
+
+# Describe VPA
+kubectl describe vpa kubengix-vpa
+
+
+Generate Load
+
+# Terminal 1 - List and watch pods
+kubectl get pods -w
+
+# Terminal 2 - Generate Load
+kubectl run --generator=run-pod/v1 apache-bench -i --tty --rm --image=httpd -- ab -n 500000 -c 1000 http://vpa-demo-service-nginx.default.svc.cluster.local/
+
+# Terminal 3 - Generate Load
+kubectl run --generator=run-pod/v1 apache-bench2 -i --tty --rm --image=httpd -- ab -n 500000 -c 1000 http://vpa-demo-service-nginx.default.svc.cluster.local/
+
+# Terminal 4 - Generate Load
+kubectl run --generator=run-pod/v1 apache-bench3 -i --tty --rm --image=httpd -- ab -n 500000 -c 1000 http://vpa-demo-service-nginx.default.svc.cluster.local/
+
+
+Describe pods which were re-launched by VPA Updater
+
+# List Pods
+kubectl get pods
+
+# Describe pods
+kubectl describe pod <recently-relaunched-pod>
+
+
+kubectl delete -f VPA-Demo.yaml
+kubectl delete -f VPA.yaml
