@@ -15,21 +15,6 @@ kubectl get pods -n kube-system
 
 
 # Deploy Application
-kubectl apply -f kube-manifests/01-VPA-DemoApplication.yml
-
-# List Pods, Deploy & Service
-kubectl get pod,svc,deploy
-
-# Describe Pod
-kubectl describe pod <pod-name>
-
-# Access Application (If our NodeGroup is in Public Subnet, if not ignore)
-kubectl get nodes -o wide
-http://<Worker-Node-Public-IP>:31232
-
-
-
-# Deploy Application
 kubectl apply -f VPA-Demo.yml
 
 # List Pods, Deploy & Service
