@@ -1,0 +1,27 @@
+Specify metric and conditions
+  - Select Metric: Container Insights -> ClusterName -> node_cpu_utilization
+  - Metric Name: eksdemo1_node_cpu_utilization
+  - Threshold Value: 4
+  - Important Note: Anything above 4% of CPU it will send a notification email, ideally it should 80% or 90% CPU but we are giving 4% CPU just for load simulation testing
+
+Configure Actions
+  - Create New Topic: eks-alerts
+  - Email: dkalyanreddy@gmail.com
+  - Click on Create Topic
+  - Important Note:** Complete Email subscription sent to your email id.
+
+Add name and description
+  - Name: EKS-Nodes-CPU-Alert
+  - Descritption: EKS Nodes CPU alert notification
+  - Click Next
+
+Preview
+  - Preview and Create Alarm
+  - Add Alarm to our custom Dashboard
+
+Generate Load & Verify Alarm
+
+# Generate Load
+kubectl run --generator=run-pod/v1 apache-bench -i --tty --rm --image=httpd -- ab -n 500000 -c 1000 http://sample-nginx-service.default.svc.cluster.local/ 
+
+

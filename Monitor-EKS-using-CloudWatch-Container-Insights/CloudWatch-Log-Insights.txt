@@ -1,0 +1,58 @@
+Create Graph for Avg Node CPU Utlization
+  - DashBoard Name: EKS-Performance
+  - Widget Type: Bar
+  - Log Group: /aws/containerinsights/eksdemo1/performance
+
+STATS avg(node_cpu_utilization) as avg_node_cpu_utilization by NodeName
+| SORT avg_node_cpu_utilization DESC 
+
+Container Restarts
+   - DashBoard Name: EKS-Performance
+   - Widget Type: Table
+   - Log Group: /aws/containerinsights/eksdemo1/performance
+
+STATS avg(number_of_container_restarts) as avg_number_of_container_restarts by PodName
+| SORT avg_number_of_container_restarts DESC
+
+
+Cluster Node Failures
+   - DashBoard Name: EKS-Performance
+   - Widget Type: Table
+   - Log Group: /aws/containerinsights/eksdemo1/performance
+
+stats avg(cluster_failed_node_count) as CountOfNodeFailures 
+| filter Type="Cluster" 
+| sort @timestamp desc
+
+CPU Usage By Container
+  - DashBoard Name: EKS-Performance
+  - Widget Type: Bar
+  - Log Group: /aws/containerinsights/eksdemo1/performance
+
+stats pct(container_cpu_usage_total, 50) as CPUPercMedian by kubernetes.container_name 
+| filter Type="Container"
+
+
+Pods Requested vs Pods Running
+  - DashBoard Name: EKS-Performance
+  - Widget Type: Bar
+  - Log Group: /aws/containerinsights/eksdemo1/performance
+
+fields @timestamp, @message 
+| sort @timestamp desc 
+| filter Type="Pod" 
+| stats min(pod_number_of_containers) as requested, min(pod_number_of_running_containers) as running, ceil(avg(pod_number_of_containers-pod_number_of_running_containers)) as pods_missing by kubernetes.pod_name 
+| sort pods_missing desc
+
+
+Application log errors by container name
+  - DashBoard Name: EKS-Performance
+  - Widget Type: Bar
+  - Log Group: /aws/containerinsights/eksdemo1/application
+
+stats count() as countoferrors by kubernetes.container_name 
+| filter stream="stderr" 
+| sort countoferrors desc
+
+
+

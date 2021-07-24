@@ -1,0 +1,30 @@
+Associate CloudWatch Policy (CloudWatchAgentServerPolicy) to EKS Worker Nodes Role
+
+Install Container Insights
+ - Deploy CloudWatch Agent and Fluentd as DaemonSets
+# Template
+curl -s https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/quickstart/cwagent-fluentd-quickstart.yaml | sed "s/{{cluster_name}}/<REPLACE_CLUSTER_NAME>/;s/{{region_name}}/<REPLACE-AWS_REGION>/" | kubectl apply -f -
+
+# Replaced Cluster Name and Region
+curl -s https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/quickstart/cwagent-fluentd-quickstart.yaml | sed "s/{{cluster_name}}/eksdemo1/;s/{{region_name}}/us-east-1/" | kubectl apply -f -
+
+This command will
+  - Creates the Namespace amazon-cloudwatch.
+  - Creates all the necessary security objects for both DaemonSet:
+      - SecurityAccount
+      - ClusterRole
+      - ClusterRoleBinding
+      - Deploys Cloudwatch-Agent (responsible for sending the metrics to CloudWatch) as a DaemonSet.
+      - Deploys fluentd (responsible for sending the logs to Cloudwatch) as a DaemonSet.
+      - Deploys ConfigMap configurations for both DaemonSets.
+
+# List Daemonsets
+kubectl -n amazon-cloudwatch get daemonsets
+
+Deploy Sample Nginx Application
+kubectl apply -f kube-manifests
+
+Generate load on our Sample Nginx Application
+kubectl run --generator=run-pod/v1 apache-bench -i --tty --rm --image=httpd -- ab -n 500000 -c 1000 http://sample-nginx-service.default.svc.cluster.local/ 
+
+
