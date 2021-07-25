@@ -1,0 +1,40 @@
+# Build Docker Image
+docker build -t <ECR-REPOSITORY-URI>:<TAG> . 
+docker build -t 069313503230.dkr.ecr.us-east-1.amazonaws.com/ecr-dem:1.0.0 . 
+
+# Run Docker Image locally & Test
+docker run --name <name-of-container> -p 80:80 --rm -d <ECR-REPOSITORY-URI>:<TAG>
+docker run --name ecr-nginx-demo -p 80:80 --rm -d 069313503230.dkr.ecr.us-east-1.amazonaws.com/ecr-dem:1.0.0
+
+# Access Application locally
+http://localhost
+
+# Stop Docker Container
+docker ps
+docker stop ecr-nginx-demo
+docker ps -a -q
+
+
+Push Docker Image to AWS ECR
+
+# Get Login Password
+aws ecr get-login-password --region <your-region> | docker login --username AWS --password-stdin <ECR-REPOSITORY-URI>
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 069313503230.dkr.ecr.us-east-1.amazonaws.com
+
+# Push the Docker Image
+docker push <ECR-REPOSITORY-URI>:<TAG>
+docker push 069313503230.dkr.ecr.us-east-1.amazonaws.com/ecr-dem:1.0.0
+
+
+Using ECR Image to deploy to Amazon EKS
+ - Verify ECR Access to EKS Worker Nodes
+ - Policy with name AmazonEC2ContainerRegistryReadOnly, AmazonEC2ContainerRegistryPowerUser should be associated
+
+# Deploy
+kubectl apply -f ecr-demo-ap/
+
+# Verify
+kubectl get deploy
+kubectl get svc
+kubectl get po
+kubectl get ingress
