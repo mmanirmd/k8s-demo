@@ -1,0 +1,27 @@
+Deploy all manifests and test
+
+kubectl apply -f kube-manifests/
+
+
+# List Ingress Load Balancers
+kubectl get ingress
+
+# List Pods
+kubectl get pods
+
+# List Services
+kubectl get svc
+
+
+# Verify logs
+kubectl logs -f $(kubectl get po -n kube-system | egrep -o 'alb-ingress-controller-[A-Za-z0-9-]+') -n kube-system
+
+
+Access Application
+http://<ALB-DNS-URL>/app1/index.html
+http://<ALB-DNS-URL>/app2/index.html
+http://<ALB-DNS-URL>/usermgmt/health-status
+
+
+Clean Up
+kubectl delete -f kube-manifests/

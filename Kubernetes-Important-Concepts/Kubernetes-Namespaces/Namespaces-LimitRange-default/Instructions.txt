@@ -1,0 +1,32 @@
+1. Create Namespace manifest
+2. Create LimitRange manifest
+   - Instead of specifying resources like cpu and memory in every container spec of a pod defintion, 
+     we can provide the default CPU & Memory for all containers in a namespace using LimitRange
+3. Update all k8s manifest with namespace
+4. Create k8s objects & Test
+# Create All Objects
+kubectl apply -f kube-manifests/
+
+# List Pods
+kubectl get pods -n dev3 -w
+
+# View Pod Specification (CPU & Memory)
+kubectl get pod <pod-name> -o yaml -n dev3
+
+# Get & Describe Limits
+kubectl get limits -n dev3
+kubectl describe limits default-cpu-mem-limit-range -n dev3
+
+# Get NodePort
+kubectl get svc -n dev3
+
+# Get Public IP of a Worker Node
+kubectl get nodes -o wide
+
+# Access Application Health Status Page
+http://<WorkerNode-Public-IP>:<NodePort>/usermgmt/health-status
+
+
+5. Clean-Up
+# Delete All
+kubectl delete -f kube-manifests/

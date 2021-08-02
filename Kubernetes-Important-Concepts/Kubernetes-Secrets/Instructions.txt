@@ -1,0 +1,31 @@
+Create Secret for MySQL DB Password
+
+# Mac/linux
+echo -n 'dbpassword11' | base64
+
+For Windows:
+# URL: https://www.base64encode.org
+
+1. Create Kubernetes Secrets manifest
+2. Update secret in MySQL Deployment for DB Password
+3. Update secret in UMS Deployment
+
+4. Create & Test
+# Create All Objects
+kubectl apply -f kube-manifests/
+
+# List Pods
+kubectl get pods
+
+# Access Application Health Status Page
+http://<WorkerNode-Public-IP>:31231/usermgmt/health-status
+
+
+# Delete All
+kubectl delete -f kube-manifests/
+
+# List Pods
+kubectl get pods
+
+# Verify sc, pvc, pv
+kubectl get sc,pvc,pv

@@ -1,0 +1,31 @@
+1. Add Requests & Limits in manifest files
+2. Create k8s objects & Test
+
+# Create All Objects
+kubectl apply -f kube-manifests/
+
+# List Pods
+kubectl get pods
+
+# Watch List Pods screen
+kubectl get pods -w
+
+# Describe Pod & Discuss about init container
+kubectl describe pod <usermgmt-microservice-xxxxxx>
+
+# Access Application Health Status Page
+http://<WorkerNode-Public-IP>:31231/usermgmt/health-status
+
+# List Nodes & Describe Node
+kubectl get nodes
+kubectl describe node <Node-Name>
+
+3. Clean up
+# Delete All
+kubectl delete -f kube-manifests/
+
+# List Pods
+kubectl get pods
+
+# Verify sc, pvc, pv
+kubectl get sc,pvc,pv

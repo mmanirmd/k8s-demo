@@ -1,0 +1,83 @@
+1. Create Namespace - Imperative Commands
+
+# List Namespaces
+kubectl get ns 
+
+# Craete Namespace
+kubectl create namespace <namespace-name>
+kubectl create namespace dev1
+kubectl create namespace dev2
+
+# List Namespaces
+kubectl get ns 
+
+
+2. Deploy All k8s Objects to dev1 and dev2 namespaces
+
+# Deploy All k8s Objects
+kubectl apply -f kube-manifests/ -n dev1
+kubectl apply -f kube-manifests/ -n dev2
+
+# List all objects from dev1 & dev2 Namespaces
+kubectl get all -n dev1
+kubectl get all -n dev2
+
+
+3. Verify SC,PVC and PV
+
+# List PVC for dev1 and dev2
+kubectl get pvc -n dev1
+kubectl get pvc -n dev2
+
+# List sc,pv
+kubect get sc,pv
+
+
+4. Access Application
+
+# Get Public IP
+kubectl get nodes -o wide
+
+# Get NodePort for dev1 usermgmt service
+kubectl get svc -n dev1
+
+# Access Application
+http://<Worker-Node-Public-Ip>:<Dev1-NodePort>/usermgmt/health-stauts
+
+
+# Get Public IP
+kubectl get nodes -o wide
+
+# Get NodePort for dev2 usermgmt service
+kubectl get svc -n dev2
+
+# Access Application
+http://<Worker-Node-Public-Ip>:<Dev2-NodePort>/usermgmt/health-stauts
+
+
+5. Clean-Up
+
+# Delete namespaces dev1 & dev2
+kubectl delete ns dev1
+kubectl delete ns dev2
+
+# List all objects from dev1 & dev2 Namespaces
+kubectl get all -n dev1
+kubectl get all -n dev2
+
+# List Namespaces
+kubectl get ns
+
+# List sc,pv
+kubectl get sc,pv
+
+# Delete Storage Class
+kubectl delete sc ebs-sc
+
+# Get all from All Namespaces
+kubectl get all -all-namespaces
+
+
+
+
+
