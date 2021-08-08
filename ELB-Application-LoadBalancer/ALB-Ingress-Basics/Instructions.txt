@@ -1,0 +1,28 @@
+Deploy Application with ALB Ingress Template included
+
+# Deploy Application with ALB Template
+kubectl apply -f kube-manifests/
+
+# Verify our UMS App is UP and Running
+kubectl get pods
+kubectl logs -f <pod-name>
+kubectl logs -f usermgmt-microservice-fbc79c78d-ctljm 
+
+# Get List of Ingress  (Make a note of Address field)
+kubectl get ingress
+
+# List Services
+kubectl get svc
+
+# Describe Ingress Controller
+kubectl describe ingress ingress-usermgmt-restapp-service 
+
+# Verify ALB Ingress Controller logs
+kubectl logs -f $(kubectl get po -n kube-system | egrep -o 'alb-ingress-controller-[A-Za-z0-9-]+') -n kube-system
+
+
+# Access Application
+http://<ALB-DNS-URL>/usermgmt/health-status
+
+# Clean Up
+kubectl delete -f kube-manifests/

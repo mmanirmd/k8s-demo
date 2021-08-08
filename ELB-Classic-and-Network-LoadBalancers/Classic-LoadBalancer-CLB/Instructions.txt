@@ -1,0 +1,19 @@
+# Deploy all manifests
+kubectl apply -f kube-manifests/
+
+# List Services (Verify newly created CLB Service)
+kubectl get svc
+
+# Verify Pods
+kubectl get pods
+
+
+# Access Application
+http://<CLB-DNS-NAME>/usermgmt/health-status
+
+
+# Delete all Objects created
+kubectl delete -f kube-manifests/
+
+# Verify current Kubernetes Objects
+kubectl get all

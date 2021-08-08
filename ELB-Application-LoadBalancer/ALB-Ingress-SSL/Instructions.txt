@@ -1,0 +1,24 @@
+1. Pre-requisite - Register a Domain in Route53 (if not exists)
+2. Create a SSL Certificate in Certificate Manager
+3. Add annotations related to SSL (ALB-Ingress-SSL.yml)
+4. Deploy all manifests and test
+
+kubectl apply -f kube-manifests/
+kubectl get ingress 
+
+5. Add DNS in Route53
+6. Access Application using newly registered DNS Name
+
+# HTTP URLs
+http://ssldemo.awsk8scloud.com/app1/index.html
+http://ssldemo.awsk8scloud.com/app2/index.html
+http://ssldemoawsk8scloud.com/usermgmt/health-status
+
+# HTTPS URLs
+https://ssldemo.awsk8scloud.com/app1/index.html
+https://ssldemo.awsk8scloud.com/app2/index.html
+https://ssldemo.awsk8scloud.com/usermgmt/health-status
+
+Clean-Up
+kubectl delete -f kube-manifests/
+

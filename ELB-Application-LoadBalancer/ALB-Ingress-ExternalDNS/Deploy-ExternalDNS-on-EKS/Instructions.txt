@@ -1,0 +1,78 @@
+1. Create IAM Policy
+
+-This IAM policy will allow external-dns pod to add, remove DNS entries (Record Sets in a Hosted Zone) in AWS Route53 service
+  - Go to Services -> IAM -> Policies -> Create Policy
+  - Click on JSON Tab and copy paste below JSON
+  - Click on Visual editor tab to validate
+  - Click on Review Policy
+  - Name: AllowExternalDNSUpdates
+  - Description: Allow access to Route53 Resources for ExternalDNS
+  - Click on Create Polic
+  - Make a note of Policy ARN which we will use in next step
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "route53:ChangeResourceRecordSets"
+      ],
+      "Resource": [
+        "arn:aws:route53:::hostedzone/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "route53:ListHostedZones",
+        "route53:ListResourceRecordSets"
+      ],
+      "Resource": [
+        "*"
+      ]
+    }
+  ]
+}
+
+2. Create IAM Role, k8s Service Account & Associate IAM Policy
+
+# Template
+eksctl create iamserviceaccount \
+    --name service_account_name \
+    --namespace service_account_namespace \
+    --cluster cluster_name \
+    --attach-policy-arn IAM_policy_ARN \
+    --approve \
+    --override-existing-serviceaccounts
+
+# Replaced name, namespace, cluster, arn 
+eksctl create iamserviceaccount \
+    --name external-dns \
+    --namespace default \
+    --cluster eksdemo1 \
+    --attach-policy-arn arn:aws:iam::180789647333:policy/AllowExternalDNSUpdates \
+    --approve \
+    --override-existing-serviceaccounts
+
+  - Now make a note of that Role ARN, this we need to update in External-DNS k8s manifest
+arn:aws:iam::180789647333:role/eksctl-eksdemo1-addon-iamserviceaccount-defa-Role1-1O3H7ZLUED5H4
+
+
+3. Verify the Service Account
+kubectl get sa external-dns
+
+4. Update External DNS Kubernetes manifest (Deploy-ExternalDNS.yml)
+    eks.amazonaws.com/role-arn: arn:aws:iam::411686525067:role/eksctl-demo1-addon-iamserviceaccount-default-Role1-M7IEPRHZYLPB   
+
+5. Deploy ExternalDNS
+# Deploy external DNS
+kubectl apply -f kube-manifests/
+
+# Verify Deployment by checking logs
+kubectl logs -f $(kubectl get po | egrep -o 'external-dns[A-Za-z0-9-]+')
+
+# List pods (external-dns pod should be in running state)
+kubectl get pods
+
+
+

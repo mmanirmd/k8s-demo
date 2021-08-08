@@ -1,0 +1,33 @@
+Connect to RDS Database using kubectl and create usermgmt schema/db
+
+kubectl run -it --rm --image=mysql:5.7.22 --restart=Never mysql-client -- mysql -h usermgmtdb.c7hldelt9xfp.us-east-1.rds.amazonaws.com -u dbadmin -pdbpassword11
+
+mysql> show schemas;
+mysql> create database usermgmt;
+mysql> show schemas;
+mysql> exit
+
+Deploy User Management Microservice and Test
+# Deploy all Manifests
+kubectl apply -f kube-manifests/
+
+# List Pods
+kubectl get pods
+
+# Stream pod logs to verify DB Connection is successful from SpringBoot Application
+kubectl logs -f <pod-name>
+
+Access Application
+# Capture Worker Node External IP or Public IP
+kubectl get nodes -o wide
+
+# Access Application
+http://<Worker-Node-Public-Ip>:31231/usermgmt/health-status
+
+Clean Up
+# Delete all Objects created
+kubectl delete -f kube-manifests/
+
+# Verify current Kubernetes Objects
+kubectl get all
+

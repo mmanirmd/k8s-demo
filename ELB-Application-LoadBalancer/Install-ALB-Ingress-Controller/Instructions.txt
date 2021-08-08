@@ -48,14 +48,14 @@ kubectl get deploy -n kube-system
 
 
 Edit ALB Ingress Controller Manifest
- - Edit ALB Ingress Controller manifest and add clustername field - --cluster-name=eksdemo1
+ - Edit ALB Ingress Controller manifest and add clustername field - --cluster-name=eks-demo
 
 # Replaced cluster-name with our cluster-name eksdemo1
     spec:
       containers:
       - args:
         - --ingress-class=alb
-        - --cluster-name=eksdemo1
+        - --cluster-name=eks-demo
 
 Verify our ALB Ingress Controller is running
 

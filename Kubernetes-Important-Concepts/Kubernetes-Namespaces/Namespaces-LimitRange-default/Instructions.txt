@@ -2,6 +2,7 @@
 2. Create LimitRange manifest
    - Instead of specifying resources like cpu and memory in every container spec of a pod defintion, 
      we can provide the default CPU & Memory for all containers in a namespace using LimitRange
+
 3. Update all k8s manifest with namespace
 4. Create k8s objects & Test
 # Create All Objects

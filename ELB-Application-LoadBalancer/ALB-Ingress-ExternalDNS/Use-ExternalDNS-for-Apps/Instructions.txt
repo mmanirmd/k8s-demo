@@ -1,0 +1,33 @@
+1. Update Ingress manifest by adding External DNS Annotation (ALB-Ingress-SSL-Redirect-ExternalDNS.yml)
+ # External DNS - For creating a Record Set in Route53
+    external-dns.alpha.kubernetes.io/hostname: dnstest1.awsk8scloud.com, dnstest2.awsk8scloud.com  
+
+2. Deploy all Application Kubernetes Manifests
+# Deploy
+kubectl apply -f kube-manifests/
+
+3. Verify External DNS
+# Verify External DNS logs
+kubectl logs -f $(kubectl get po | egrep -o 'external-dns[A-Za-z0-9-]+')
+
+4. Verify Route53
+
+5. Access Application using newly registered DNS Name
+
+# nslookup commands
+nslookup dnstest1.awsk8scloud.com
+nslookup dnstest2.awsk8scloud.com
+
+# HTTP URLs (Should Redirect to HTTPS)
+http://dnstest1.awsk8scloud.com/app1/index.html
+http://dnstest1.awsk8scloud.com/app2/index.html
+http://dnstest1.awsk8scloud.com/usermgmt/health-status
+
+# HTTP URLs (Should Redirect to HTTPS)
+http://dnstest2.awsk8scloud.com/app1/index.html
+http://dnstest2.awsk8scloud.com/app2/index.html
+http://dnstest2.awsk8scloud.com/usermgmt/health-status
+
+6. Clean Up
+kubectl delete -f kube-manifests/
+
