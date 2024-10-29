@@ -1,33 +1,42 @@
-
-
 #!/bin/bash
 
 # Variables
-EMAIL="your_email@example.com" # Change to your email address
+EMAIL="your_email@example.com"  # Change to your email address
 SUBJECT="Error Detected in Rendering/Sourcing/Sync Process"
 BODY=""
 ERROR_FOUND=0
 
-# Read from a file containing the data (or use a command to get the data dynamically)
-# Example assumes the data is in a file named `data.txt` in the format:
+# Read the input file
+# Assuming data.txt has the following format:
 # NAME    RENDERINGCOMMIT    RENDERINGERRORCOUNT    SOURCEcommit    SOURCEERRORCOUNT    SYNcommit    SYNCERRORCOUNT
 
-while read -r NAME RENDERINGCOMMIT RENDERINGERRORCOUNT SOURCEcommit SOURCEERRORCOUNT SYNcommit SYNCERRORCOUNT; do
-  # Skip header or empty lines
-  [[ "$NAME" == "NAME" || -z "$NAME" ]] && continue
+while IFS=$'\t' read -r NAME RENDERINGCOMMIT RENDERINGERRORCOUNT SOURCEcommit SOURCEERRORCOUNT SYNcommit SYNCERRORCOUNT; do
+  # Skip the header or empty lines
+  if [[ "$NAME" == "NAME" || -z "$NAME" ]]; then
+    continue
+  fi
 
-  # Check if any error count is not empty (non-zero)
+  # Remove potential spaces or non-numeric characters from error counts
+  RENDERINGERRORCOUNT=$(echo "$RENDERINGERRORCOUNT" | tr -d '[:space:]')
+  SOURCEERRORCOUNT=$(echo "$SOURCEERRORCOUNT" | tr -d '[:space:]')
+  SYNCERRORCOUNT=$(echo "$SYNCERRORCOUNT" | tr -d '[:space:]')
+
+  # Convert counts to numbers (or assume 0 if not numeric)
+  RENDERINGERRORCOUNT=${RENDERINGERRORCOUNT:-0}
+  SOURCEERRORCOUNT=${SOURCEERRORCOUNT:-0}
+  SYNCERRORCOUNT=${SYNCERRORCOUNT:-0}
+
+  # Check if any of the counts are non-zero
   if [[ "$RENDERINGERRORCOUNT" -ne 0 || "$SOURCEERRORCOUNT" -ne 0 || "$SYNCERRORCOUNT" -ne 0 ]]; then
     ERROR_FOUND=1
     BODY+="Error in $NAME: Rendering Errors=$RENDERINGERRORCOUNT, Source Errors=$SOURCEERRORCOUNT, Sync Errors=$SYNCERRORCOUNT\n"
   fi
 done < data.txt
 
-# If any errors found, send email
+# If any errors found, send an email
 if [[ "$ERROR_FOUND" -eq 1 ]]; then
   echo -e "$BODY" | mail -s "$SUBJECT" "$EMAIL"
   echo "Email sent to $EMAIL."
 else
   echo "No errors found."
 fi
-
