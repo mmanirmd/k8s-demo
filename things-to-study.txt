@@ -1,7 +1,26 @@
-1. Docker, Deployment, Pods, replicaSet, Cluster AutoScaler, Deamonset
+#!/bin/bash
 
-2. HPA, Ingress, configmap, service. RBAC, logging/monitoring
+# Set variables
+TO_EMAIL="recipient@example.com"
+FROM_EMAIL="sender@example.com"
+SMTP_SERVER="smtp.example.com"
+SUBJECT="Alert: Sync or Rendering Errors Detected in RootSync"
+TEMP_FILE="/tmp/rootsync_status.txt"
 
-3. Consisten Volume, secrets
+# Get the RootSync status
+kubectl get rootsync -A > $TEMP_FILE
 
-4. Helm, NetworkPolicy, Service Mesh
+# Check for empty SYNCERRORCOUNT or RENDERINGERRORCOUNT
+ERRORS_FOUND=$(awk 'NR > 1 && ($4 == "" || $5 == "")' $TEMP_FILE)
+
+if [ -n "$ERRORS_FOUND" ]; then
+    # Prepare email content
+    EMAIL_BODY="RootSync issues detected:\n\n$(cat $TEMP_FILE)"
+    
+    # Send email
+    echo -e "$EMAIL_BODY" | mail -s "$SUBJECT" -r "$FROM_EMAIL" -S smtp="$SMTP_SERVER" "$TO_EMAIL"
+fi
+
+# Cleanup
+rm -f $TEMP_FILE
+
