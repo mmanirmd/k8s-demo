@@ -1,26 +1,33 @@
+
+
 #!/bin/bash
 
-# Set variables
-TO_EMAIL="recipient@example.com"
-FROM_EMAIL="sender@example.com"
-SMTP_SERVER="smtp.example.com"
-SUBJECT="Alert: Sync or Rendering Errors Detected in RootSync"
-TEMP_FILE="/tmp/rootsync_status.txt"
+# Variables
+EMAIL="your_email@example.com" # Change to your email address
+SUBJECT="Error Detected in Rendering/Sourcing/Sync Process"
+BODY=""
+ERROR_FOUND=0
 
-# Get the RootSync status
-kubectl get rootsync -A > $TEMP_FILE
+# Read from a file containing the data (or use a command to get the data dynamically)
+# Example assumes the data is in a file named `data.txt` in the format:
+# NAME    RENDERINGCOMMIT    RENDERINGERRORCOUNT    SOURCEcommit    SOURCEERRORCOUNT    SYNcommit    SYNCERRORCOUNT
 
-# Check for empty SYNCERRORCOUNT or RENDERINGERRORCOUNT
-ERRORS_FOUND=$(awk 'NR > 1 && ($4 == "" || $5 == "")' $TEMP_FILE)
+while read -r NAME RENDERINGCOMMIT RENDERINGERRORCOUNT SOURCEcommit SOURCEERRORCOUNT SYNcommit SYNCERRORCOUNT; do
+  # Skip header or empty lines
+  [[ "$NAME" == "NAME" || -z "$NAME" ]] && continue
 
-if [ -n "$ERRORS_FOUND" ]; then
-    # Prepare email content
-    EMAIL_BODY="RootSync issues detected:\n\n$(cat $TEMP_FILE)"
-    
-    # Send email
-    echo -e "$EMAIL_BODY" | mail -s "$SUBJECT" -r "$FROM_EMAIL" -S smtp="$SMTP_SERVER" "$TO_EMAIL"
+  # Check if any error count is not empty (non-zero)
+  if [[ "$RENDERINGERRORCOUNT" -ne 0 || "$SOURCEERRORCOUNT" -ne 0 || "$SYNCERRORCOUNT" -ne 0 ]]; then
+    ERROR_FOUND=1
+    BODY+="Error in $NAME: Rendering Errors=$RENDERINGERRORCOUNT, Source Errors=$SOURCEERRORCOUNT, Sync Errors=$SYNCERRORCOUNT\n"
+  fi
+done < data.txt
+
+# If any errors found, send email
+if [[ "$ERROR_FOUND" -eq 1 ]]; then
+  echo -e "$BODY" | mail -s "$SUBJECT" "$EMAIL"
+  echo "Email sent to $EMAIL."
+else
+  echo "No errors found."
 fi
-
-# Cleanup
-rm -f $TEMP_FILE
 
