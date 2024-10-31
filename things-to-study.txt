@@ -1,42 +1,23 @@
 #!/bin/bash
 
-# Variables
-EMAIL="your_email@example.com"  # Change to your email address
-SUBJECT="Error Detected in Rendering/Sourcing/Sync Process"
-BODY=""
-ERROR_FOUND=0
+# Commands to check for error counts
+RENDERING_ERROR=$(kubectl get rootsync root-syn -n config-management-system -o jsonpath='{.status.rendering.errorSummary.errorCount}')
+SOURCE_ERROR=$(kubectl get rootsync root-syn -n config-management-system -o jsonpath='{.status.source.errorSummary.errorCount}')
+SYNC_ERROR=$(kubectl get rootsync root-syn -n config-management-system -o jsonpath='{.status.sync.errorSummary.errorCount}')
 
-# Read the input file
-# Assuming data.txt has the following format:
-# NAME    RENDERINGCOMMIT    RENDERINGERRORCOUNT    SOURCEcommit    SOURCEERRORCOUNT    SYNcommit    SYNCERRORCOUNT
+# Email details
+TO="your-email@example.com"
+SUBJECT="RootSync Error Alert"
+BODY="Detected errors in RootSync:\n\n"
 
-while IFS=$'\t' read -r NAME RENDERINGCOMMIT RENDERINGERRORCOUNT SOURCEcommit SOURCEERRORCOUNT SYNcommit SYNCERRORCOUNT; do
-  # Skip the header or empty lines
-  if [[ "$NAME" == "NAME" || -z "$NAME" ]]; then
-    continue
-  fi
-
-  # Remove potential spaces or non-numeric characters from error counts
-  RENDERINGERRORCOUNT=$(echo "$RENDERINGERRORCOUNT" | tr -d '[:space:]')
-  SOURCEERRORCOUNT=$(echo "$SOURCEERRORCOUNT" | tr -d '[:space:]')
-  SYNCERRORCOUNT=$(echo "$SYNCERRORCOUNT" | tr -d '[:space:]')
-
-  # Convert counts to numbers (or assume 0 if not numeric)
-  RENDERINGERRORCOUNT=${RENDERINGERRORCOUNT:-0}
-  SOURCEERRORCOUNT=${SOURCEERRORCOUNT:-0}
-  SYNCERRORCOUNT=${SYNCERRORCOUNT:-0}
-
-  # Check if any of the counts are non-zero
-  if [[ "$RENDERINGERRORCOUNT" -ne 0 || "$SOURCEERRORCOUNT" -ne 0 || "$SYNCERRORCOUNT" -ne 0 ]]; then
-    ERROR_FOUND=1
-    BODY+="Error in $NAME: Rendering Errors=$RENDERINGERRORCOUNT, Source Errors=$SOURCEERRORCOUNT, Sync Errors=$SYNCERRORCOUNT\n"
-  fi
-done < data.txt
-
-# If any errors found, send an email
-if [[ "$ERROR_FOUND" -eq 1 ]]; then
-  echo -e "$BODY" | mail -s "$SUBJECT" "$EMAIL"
-  echo "Email sent to $EMAIL."
+# Check if any error count is greater than 0
+if [[ "$RENDERING_ERROR" != "0" || "$SOURCE_ERROR" != "0" || "$SYNC_ERROR" != "0" ]]; then
+  BODY+="Rendering Error Count: $RENDERING_ERROR\n"
+  BODY+="Source Error Count: $SOURCE_ERROR\n"
+  BODY+="Sync Error Count: $SYNC_ERROR\n"
+  
+  # Send the email alert using `mail` command (ensure it's installed and configured)
+  echo -e "$BODY" | mail -s "$SUBJECT" "$TO"
 else
-  echo "No errors found."
+  echo "No errors detected in RootSync."
 fi
