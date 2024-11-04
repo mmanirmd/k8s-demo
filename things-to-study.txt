@@ -1,23 +1,29 @@
 #!/bin/bash
 
-# Commands to check for error counts
+# Fetch error counts
 RENDERING_ERROR=$(kubectl get rootsync root-syn -n config-management-system -o jsonpath='{.status.rendering.errorSummary.errorCount}')
 SOURCE_ERROR=$(kubectl get rootsync root-syn -n config-management-system -o jsonpath='{.status.source.errorSummary.errorCount}')
 SYNC_ERROR=$(kubectl get rootsync root-syn -n config-management-system -o jsonpath='{.status.sync.errorSummary.errorCount}')
 
-# Email details
-TO="your-email@example.com"
-SUBJECT="RootSync Error Alert"
-BODY="Detected errors in RootSync:\n\n"
+# Initialize email variables
+EMAIL="your_email@example.com"
+SUBJECT="Error Notification for RootSync"
+BODY=""
 
-# Check if any error count is greater than 0
-if [[ "$RENDERING_ERROR" != "0" || "$SOURCE_ERROR" != "0" || "$SYNC_ERROR" != "0" ]]; then
+# Check error counts and construct email body
+if [ "$RENDERING_ERROR" -ge 1 ]; then
   BODY+="Rendering Error Count: $RENDERING_ERROR\n"
+fi
+
+if [ "$SOURCE_ERROR" -ge 1 ]; then
   BODY+="Source Error Count: $SOURCE_ERROR\n"
+fi
+
+if [ "$SYNC_ERROR" -ge 1 ]; then
   BODY+="Sync Error Count: $SYNC_ERROR\n"
-  
-  # Send the email alert using `mail` command (ensure it's installed and configured)
-  echo -e "$BODY" | mail -s "$SUBJECT" "$TO"
-else
-  echo "No errors detected in RootSync."
+fi
+
+# Send email if there are any errors
+if [ -n "$BODY" ]; then
+  echo -e "$BODY" | mail -s "$SUBJECT" "$EMAIL"
 fi
