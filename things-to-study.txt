@@ -1,9 +1,14 @@
 #!/bin/bash
 
-# Fetch error counts
-RENDERING_ERROR=$(kubectl get rootsync root-syn -n config-management-system -o jsonpath='{.status.rendering.errorSummary.errorCount}')
-SOURCE_ERROR=$(kubectl get rootsync root-syn -n config-management-system -o jsonpath='{.status.source.errorSummary.errorCount}')
-SYNC_ERROR=$(kubectl get rootsync root-syn -n config-management-system -o jsonpath='{.status.sync.errorSummary.errorCount}')
+# Fetch error counts, defaulting to 0 if the value is empty
+RENDERING_ERROR=$(kubectl get rootsync root-syn -n config-management-system -o jsonpath='{.status.rendering.errorSummary.errorCount}' 2>/dev/null || echo 0)
+SOURCE_ERROR=$(kubectl get rootsync root-syn -n config-management-system -o jsonpath='{.status.source.errorSummary.errorCount}' 2>/dev/null || echo 0)
+SYNC_ERROR=$(kubectl get rootsync root-syn -n config-management-system -o jsonpath='{.status.sync.errorSummary.errorCount}' 2>/dev/null || echo 0)
+
+# Ensure that each variable has a numeric value
+RENDERING_ERROR=${RENDERING_ERROR:-0}
+SOURCE_ERROR=${SOURCE_ERROR:-0}
+SYNC_ERROR=${SYNC_ERROR:-0}
 
 # Initialize email variables
 EMAIL="your_email@example.com"
@@ -21,9 +26,13 @@ fi
 
 if [ "$SYNC_ERROR" -ge 1 ]; then
   BODY+="Sync Error Count: $SYNC_ERROR\n"
+  # Include full output of kubectl command if there's a sync error
+  BODY+="\nDetailed RootSync Status:\n"
+  BODY+="$(kubectl get rootsync root-syn -n config-management-system -o yaml 2>/dev/null)"
 fi
 
 # Send email if there are any errors
 if [ -n "$BODY" ]; then
   echo -e "$BODY" | mail -s "$SUBJECT" "$EMAIL"
 fi
+
