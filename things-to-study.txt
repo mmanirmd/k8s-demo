@@ -3,10 +3,10 @@
 # Fetch error counts and store them in a single variable
 ERRORS=$(kubectl get rootsync root-syn -n config-management-system -o jsonpath='{.status.rendering.errorSummary.errorCount} {.status.source.errorSummary.errorCount} {.status.sync.errorSummary.errorCount}' 2>/dev/null || echo "0 0 0")
 
-# Parse error counts from ERRORS variable
-RENDERING_ERROR=$(echo "$ERRORS" | awk '{print $1}')
-SOURCE_ERROR=$(echo "$ERRORS" | awk '{print $2}')
-SYNC_ERROR=$(echo "$ERRORS" | awk '{print $3}')
+# Parse error counts and ensure they are numeric, defaulting to 0 if empty or non-numeric
+RENDERING_ERROR=$(echo "$ERRORS" | awk '{print ($1 ~ /^[0-9]+$/) ? $1 : 0}')
+SOURCE_ERROR=$(echo "$ERRORS" | awk '{print ($2 ~ /^[0-9]+$/) ? $2 : 0}')
+SYNC_ERROR=$(echo "$ERRORS" | awk '{print ($3 ~ /^[0-9]+$/) ? $3 : 0}')
 
 # Initialize email variables
 EMAIL="your_email@example.com"
