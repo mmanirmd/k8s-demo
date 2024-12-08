@@ -1,35 +1,4 @@
-#!/bin/bash
-
-# Fetch error counts and store them in a single variable
-ERRORS=$(kubectl get rootsync root-syn -n config-management-system -o jsonpath='{.status.rendering.errorSummary.errorCount} {.status.source.errorSummary.errorCount} {.status.sync.errorSummary.errorCount}' 2>/dev/null || echo "0 0 0")
-
-# Parse error counts and ensure they are numeric, defaulting to 0 if empty or non-numeric
-RENDERING_ERROR=$(echo "$ERRORS" | awk '{print ($1 ~ /^[0-9]+$/) ? $1 : 0}')
-SOURCE_ERROR=$(echo "$ERRORS" | awk '{print ($2 ~ /^[0-9]+$/) ? $2 : 0}')
-SYNC_ERROR=$(echo "$ERRORS" | awk '{print ($3 ~ /^[0-9]+$/) ? $3 : 0}')
-
-# Initialize email variables
-EMAIL="your_email@example.com"
-SUBJECT="Error Notification for RootSync"
-BODY=""
-
-# Check error counts and construct email body
-if [ "$RENDERING_ERROR" -ge 1 ]; then
-  BODY+="Rendering Error Count: $RENDERING_ERROR\n"
-fi
-
-if [ "$SOURCE_ERROR" -ge 1 ]; then
-  BODY+="Source Error Count: $SOURCE_ERROR\n"
-fi
-
-if [ "$SYNC_ERROR" -ge 1 ]; then
-  BODY+="Sync Error Count: $SYNC_ERROR\n"
-  # Include full output of kubectl command if there's a sync error
-  BODY+="\nDetailed RootSync Status:\n"
-  BODY+="$(kubectl get rootsync root-syn -n config-management-system -o yaml 2>/dev/null)"
-fi
-
-# Send email if there are any errors
-if [ -n "$BODY" ]; then
-  echo -e "$BODY" | mail -s "$SUBJECT" "$EMAIL"
-fi
+I need to be proactive in getting involved in more complex projects.
+Block out time my calendar for focused work. I use MS To Do and aiming to be more consistent in utilizing the tool.
+In the coming year, I am aiming to invest more time in learning new technologies, including a Certification on Google Cloud technology.
+I am also planning to spend more time on reading and watching videos or online course to improve my productivity, communication and leadership skills.
