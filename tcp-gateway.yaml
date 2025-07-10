@@ -10,3 +10,91 @@ spec:
     port: 13306
     targetPort: 3306
     protocol: TCP
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+spec:
+  selector:
+    app: redis
+  ports:
+  - name: tcp-16379
+    port: 16379
+    targetPort: 6379
+    protocol: TCP
+
+
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: tcp-gateway
+spec:
+  selector:
+    istio: ingressgateway  # or asm-ingressgateway
+  servers:
+  - port:
+      number: 13306
+      name: tcp-mysql
+      protocol: TCP
+    hosts:
+    - "*"
+  - port:
+      number: 16379
+      name: tcp-redis
+      protocol: TCP
+    hosts:
+    - "*"
+
+
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: tcp-multi-service
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - tcp-gateway
+  tcp:
+  - match:
+    - port: 13306
+    route:
+    - destination:
+        host: mysql-service.default.svc.cluster.local
+        port:
+          number: 13306
+  - match:
+    - port: 16379
+    route:
+    - destination:
+        host: redis-service.default.svc.cluster.local
+        port:
+          number: 16379
+
+
+kubectl patch svc asm-ingressgateway -n istio-system --type='json' -p='[
+  {
+    "op": "add",
+    "path": "/spec/ports/-",
+    "value": {
+      "name": "tcp-mysql",
+      "port": 13306,
+      "targetPort": 13306,
+      "protocol": "TCP"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/spec/ports/-",
+    "value": {
+      "name": "tcp-redis",
+      "port": 16379,
+      "targetPort": 16379,
+      "protocol": "TCP"
+    }
+  }
+]'
+
