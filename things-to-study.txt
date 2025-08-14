@@ -8,3 +8,27 @@ gcloud container hub memberships register gkeonprem-terraform-test \
     --kubeconfig=admin-cluster-kubeconfig \
     --service-account-key-file=HUB_SA_KEY.json \
     --project=870316890899
+
+[Terraform CLI/Cloud]  
+     │
+     │ (1) Terraform sends "create cluster" request  
+     ▼
+[Google Cloud Anthos API (gkeonprem.googleapis.com)]  
+     │
+     │ (2) Anthos looks up admin_cluster_membership in GKE Hub  
+     ▼
+[GKE Hub API (gkehub.googleapis.com)]  
+     │
+     │ (3) Hub finds the registered admin cluster  
+     │
+     │ (4) Hub uses the Connect Agent tunnel  
+     ▼
+[Connect Agent inside Admin Cluster (gke-connect namespace)]  
+     │
+     │ (5) Connect Agent forwards API call to Admin Cluster’s GKE On-Prem API server  
+     ▼
+[Admin Cluster Control Plane (on-prem vSphere network)]  
+     │
+     │ (6) Admin cluster provisions the **User Cluster Control Plane** on vSphere  
+     ▼
+[User Cluster Control Plane VIP & Worker Nodes]
