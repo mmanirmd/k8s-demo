@@ -1,1 +1,10 @@
 
+gcloud container hub memberships unregister gkeonprem-terraform-test \
+    --project=870316890899 \
+    --gke-cluster=<ADMIN_CLUSTER_CONTEXT>
+
+gcloud container hub memberships register gkeonprem-terraform-test \
+    --context=<ADMIN_CLUSTER_CONTEXT> \
+    --kubeconfig=admin-cluster-kubeconfig \
+    --service-account-key-file=HUB_SA_KEY.json \
+    --project=870316890899
